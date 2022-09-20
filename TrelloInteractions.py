@@ -4,7 +4,7 @@ import requests
 import json
 import datetime
 
-url = "https://api.trello.com/1/boards/your-list-id"
+url = "https://api.trello.com/1/boards/your-board-id"
 
 headers = {
    "Accept": "application/json"
