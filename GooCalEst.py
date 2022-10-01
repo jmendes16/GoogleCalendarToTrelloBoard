@@ -22,6 +22,8 @@ subprocess.check_call([sys.executable, '-m', 'pip', 'install',
     '--upgrade', 'google-auth-httplib2'])
 subprocess.check_call([sys.executable, '-m', 'pip', 'install',
     '--upgrade', 'google-auth-oauthlib'])
+subprocess.check_call([sys.executable, '-m', 'pip', 'install',
+    '--upgrade', 'pandas'])
 
 reqs = subprocess.check_output([sys.executable, '-m', 'pip',
 'freeze'])
