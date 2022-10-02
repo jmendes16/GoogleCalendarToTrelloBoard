@@ -79,7 +79,7 @@ class trelloBoard(API):
     def putCardInList(self, listId, title, dueDate, labelId):
         url = "https://api.trello.com/1/cards"
         query = {'name':title, 'due':dueDate, 'idList':listId, 'idLabels':labelId, 'key':self.key, 'token':self.token}
-        response = requests.request("PUT", url, headers = self.headers, params = query)
+        response = requests.request("POST", url, headers = self.headers, params = query)
             
 class googleCalendar(API):
     def __init__(self, calendarAccount, serviceAccount, serviceAccountCredentials):
@@ -103,7 +103,7 @@ class googleCalendar(API):
             print('error in timeframe given to calendar')
         now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
         then = (datetime.timedelta(days = timeframe) + datetime.datetime.utcnow()).isoformat() + 'Z'
-        events_result = self.service.events().list(calendarId=calendarAccount, timeMin=now,
+        events_result = self.service.events().list(calendarId=self.calendar, timeMin=now,
                                               timeMax=then, singleEvents=True,
                                               orderBy='startTime').execute()
         eventsList = events_result.get('items', [])
@@ -112,4 +112,4 @@ class googleCalendar(API):
             start = event['start'].get('dateTime', event['start'].get('date'))
             eventsDf.append({'summary':event['summary'], 'start':self.cleanTime(start)})
         events = self.getData(eventsDf, 'summary', 'start')
-        return events
+        return events.rename(columns={'summary':'name', 'start':'due'})
