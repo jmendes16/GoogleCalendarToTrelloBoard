@@ -8,8 +8,9 @@ import pandas as pd
 class API:
     def __init__(self):
         self.headers = {"Accept": "application/json"}
-        self.SCOPES = SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-
+        self.SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+    
+    # get data and store it in standard format
     def getData(self, rawData, field1, field2):
         rdata = pd.DataFrame(rawData)
         if (not rdata.empty):
@@ -19,6 +20,7 @@ class API:
             data = rdata
             return data
     
+    # standardise time from both APIs so comparison can be made
     def cleanTime(self, inputTime, source = 'G'):
         if source == 'G':
             if len(inputTime) > 10:
@@ -50,12 +52,14 @@ class trelloBoard(API):
         query = {'lists':'all', 'key':self.key, 'token':self.token}
         response = requests.request("GET", self.url, headers = self.headers, params = query)
         return self.getData(json.loads(response.text).get('lists'), 'name', 'id')
-    
+
+    # allow user to get label ID by just knowing color 
     def getLabels(self):
         query = {'fields':['id','color'], 'key':self.key, 'token':self.token}
         response = requests.request("GET", self.url + '/labels', headers = self.headers, params = query)
         return self.getData(json.loads(response.text), 'color', 'id')
     
+    # get cards using only list name, without knowing list ID
     def getCardsInList(self, listName):
         boardLists = self.getListsId()
         if listName in boardLists['name'].tolist():
@@ -86,7 +90,9 @@ class googleCalendar(API):
         super(googleCalendar, self).__init__()
         self.calendar = calendarAccount
         self.serviceAccount = serviceAccount
+        # create service account credentials object
         self.creds = service_account.Credentials.from_service_account_file(serviceAccountCredentials, scopes = self.SCOPES)
+        # create google calendar API object
         self.service = build('calendar', 'v3', credentials=self.creds)
     
     def getEvents(self, **kwargs):
