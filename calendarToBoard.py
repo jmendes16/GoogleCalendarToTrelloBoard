@@ -25,19 +25,15 @@ def main():
         
         # get info from Google Calendar for new Trello cards in specified timeframe
         calendarEvents = G.getEvents(weeks = 1) # can change parameter to 'days = #' or 'months = #' or 'years = #'
-        print(calendarEvents)
         
         # get existing cards from Trello Board
         existingTrelloCards = T.getCardsOnBoard()
-        print(existingTrelloCards)
         
         # create list of calendar events already on Trello Board inside 
         previouslyTransferedEvents = calendarEvents.merge(existingTrelloCards, how = 'inner')
-        #print(previouslyTransferedEvents)
         
         # create a list of new events to be added, by removing the events that are already on the board
         newTrelloCards = pd.concat([calendarEvents,previouslyTransferedEvents]).drop_duplicates(keep = False)
-        print(newTrelloCards)
         
         # send new cards to Trello Board
         for cardTitle in newTrelloCards['name'].tolist():
